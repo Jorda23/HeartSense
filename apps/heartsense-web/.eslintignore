@@ -1,0 +1,13 @@
+node_modules
+.next
+public
+next-env.d.ts
+babel.config.js
+jest/jest.setup.ts
+jest/jest.setupAfterEnv.ts
+jest.config.js
+coverage
+storybook-static
+*.bundle.js
+next.config.js
+protos

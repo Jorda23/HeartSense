@@ -1,0 +1,101 @@
+nameOverride: "<env>-<REPOSITORY>"
+fullnameOverride: "<env>-<REPOSITORY>"
+lower: <env>
+upper: <ENV>
+name: <REPOSITORY>
+namespace: <NAMESPACE>
+agentPool: <AGENTPOOL>
+
+secretproviderclass:
+  keyvaultName: <KEY_VAULT>
+  resourceGroup: <RESOURCE_GROUP>
+  subscriptionId: <SUBSCRIPTION_ID>
+  tenantId: <TENANT_ID>
+
+deployment:
+  replicaCount: <REPLICA_SET>
+  aadpodidbinding: <POD_IDENTITY>
+  image:
+    repository: <ACRLOGINSERVER>
+    pullPolicy: always
+    name: <REPOSITORY>
+    version: <CURRENTVERSION>
+    buildid: <BUILDID>
+    releaseid: <RELEASEID>
+  livenessProbe:
+    path: /api/health/live
+    port: 3000
+    initialDelaySeconds: <INITIAL_DELAY_SECONDS>
+    periodSeconds: <PERIOD_SECONDS>
+    timeoutSeconds: <TIMEOUT_SECONDS>
+    failureThreshold: <FAILURE_THRESHOLD>
+  readinessProbe:
+    path: /api/health/ready
+    port: 3000
+    periodSeconds: <PERIOD_SECONDS>
+    timeoutSeconds: <TIMEOUT_SECONDS>
+    successThreshold: <SUCCESS_THRESHOLD>
+  securityContext:
+    allowPrivilegeEscalation: false
+  terminationGracePeriodSeconds: 300
+  env:
+    APP_ENV: production
+  resources:
+    requests:
+      cpu: <BASE_CPU>
+      memory: <BASE_MEMORY>
+    limits:
+      cpu: <LIMIT_CPU>
+      memory: <LIMIT_MEMORY>
+  ports:
+    httpcontainerPort: 3000
+
+service:
+  port: 3000
+
+autoscaling:
+  enabled: true
+  minReplicas: <MIN_HPA_REPLICAS>
+  maxReplicas: <MAX_HPA_REPLICAS>
+  targetCPUUtilizationPercentage: <HPA_CPU_THRESHOLD>
+  targetMemoryUtilizationPercentage: <HPA_MEMORY_THRESHOLD>
+
+ingressRouteId: <REPOSITORY>
+
+middleware:
+  spec:
+    retry:
+      attempts: 3
+      initialInterval: 1000ms
+    headers:
+      frameDeny: true
+      sslRedirect: true
+      stsSeconds: 31536000
+      stsIncludeSubdomains: true
+      contentTypeNosniff: true
+      browserXssFilter: true
+      customResponseHeaders:
+        AccessControlAllowHeaders: Authorization,Origin,Content-Type,Accept
+        AccessControlAllowMethods: PUT,GET,POST,OPTIONS,DELETE,HEAD,TRACE,PATCH
+        Server: Hide
+        xframeOptions: SAMEORIGIN
+        xContentTypeOptions: nosniff
+        strictTransportSecurity: max-age=31536000
+        xPoweredBy: Hide
+        referrerPolicy: origin
+        permissionsPolicy: geolocation=(); midi=(); notifications=(); push=(); sync-xhr=(); microphone=(); camera=(); magnetometer=(); gyroscope=(); speaker=(self); vibrate=(); fullscreen=(self); payment=();
+      contentSecurityPolicy: upgrade-insecure-requests
+    accessControlMaxAge: 300
+    addVaryHeader: true
+    buffering:
+      maxRequestBodyBytes: 20971520
+    forwardAuth:
+      address: https://api.assanet.com/authentication-ms/connect/userinfo
+
+ingressRoute:
+  spec:
+    ingressClass: prod-traefik
+    routes:
+      match: Host(`autoparts.assanet.com`)
+    tls:
+      secretName: wildcard-tls

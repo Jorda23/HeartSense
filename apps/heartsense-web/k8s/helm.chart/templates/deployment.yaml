@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.lower }}-{{ .Values.name }}
+  namespace: {{ .Values.namespace }}
+  annotations:
+    container.apparmor.security.beta.kubernetes.io/{{ .Values.lower }}-{{ .Values.name }}: runtime/default
+spec:
+  replicas: {{ .Values.deployment.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Values.lower }}-{{ .Values.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.lower }}-{{ .Values.name }}
+        aadpodidbinding: {{ .Values.deployment.aadpodidbinding }}
+    spec:
+      nodeSelector:
+        agentpool: {{ .Values.agentPool }}
+      containers:
+        - name: {{ .Values.lower }}-{{ .Values.name }}
+          image: {{ .Values.deployment.image.repository }}/{{ .Values.name }}:{{ .Values.deployment.image.version }}-{{ .Values.deployment.image.buildid }}-{{ .Values.deployment.image.releaseid }}-{{ .Values.upper }}
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.deployment.livenessProbe.path }}
+              port: {{ .Values.deployment.livenessProbe.port }}
+            initialDelaySeconds: {{ .Values.deployment.livenessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.deployment.livenessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.deployment.livenessProbe.timeoutSeconds }}
+            failureThreshold: {{ .Values.deployment.livenessProbe.failureThreshold }}
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.deployment.readinessProbe.path }}
+              port: {{ .Values.deployment.readinessProbe.port }}
+            periodSeconds: {{ .Values.deployment.readinessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.deployment.readinessProbe.timeoutSeconds }}
+            successThreshold: {{ .Values.deployment.readinessProbe.successThreshold }}
+          env:
+            - name: APP_ENV
+              value: {{ .Values.deployment.env.APP_ENV | quote }}
+          resources:
+            requests:
+              cpu: {{ .Values.deployment.resources.requests.cpu }}
+              memory: {{ .Values.deployment.resources.requests.memory }}
+            limits:
+              cpu: {{ .Values.deployment.resources.limits.cpu }}
+              memory: {{ .Values.deployment.resources.limits.memory }}
+          ports:
+            - containerPort: {{ .Values.deployment.ports.httpcontainerPort }}
+              name: http
+      terminationGracePeriodSeconds: {{ .Values.deployment.terminationGracePeriodSeconds }}
+      tolerations:
+        - key: "kubernetes.azure.com/scalesetpriority"
+          operator: "Equal"
+          value: "spot"
+          effect: "NoSchedule"

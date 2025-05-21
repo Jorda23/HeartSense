@@ -1,0 +1,33 @@
+syntax =  "proto3";
+import "google/protobuf/wrappers.proto";
+
+package Common;
+
+message Operation{
+  string OperationId = 1;
+  string OperationName = 2;
+}
+
+message OperationResult{
+  Operation Operation = 1;
+  bool Success = 2;
+  string Message = 3;
+}
+
+message DecimalValue {
+
+  // Whole units part of the amount
+  int64 units = 1;
+
+  // Nano units of the amount (10^-9)
+  // Must be same sign as units
+  sfixed32 nanos = 2;
+}
+
+message NassaFilters {
+  google.protobuf.StringValue filter = 1;
+  google.protobuf.StringValue skip = 2;
+  google.protobuf.StringValue limit = 3;
+  google.protobuf.StringValue includes = 4;
+  google.protobuf.StringValue sort = 5;
+}

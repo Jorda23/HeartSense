@@ -1,0 +1,79 @@
+syntax = "proto3";
+import "common.proto";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/wrappers.proto";
+
+option csharp_namespace = "Claims.Common.Components.ChatService.Protos";
+
+package ChatService;
+
+service ConversationService {
+  rpc ChatConversation (ChatBotRequest) returns (stream ChatBotResponse);
+  rpc UpdateConversation (UpdateConversationRequest) returns (UpdateConversationResponse);
+  rpc ObtainConversationHistory (ConversationHistoryRequest) returns (ConversationHistoryResponse);
+  rpc ObtainConversationMessages (ConversationMessagesRequest) returns (ConversationMessagesResponse);
+}
+
+message ChatBotRequest {
+  string user_message = 1;
+  string user_email = 2;
+  string conversation_id = 3;
+}
+
+message ChatBotResponse {
+  string ai_response = 1;
+  string conversation_id = 2;
+}
+
+message UpdateConversationRequest {
+  string title = 1; 
+  string user_id = 2;
+  string conversation_id = 3;
+  Common.Operation operation = 4;
+}
+
+message UpdateConversationResponse {
+  string conversation_id = 1;
+  string user_email = 2;
+  Common.Operation operation = 3;
+}
+
+message ConversationHistoryRequest {
+  string user_id = 1;
+  Common.NassaFilters filters = 2;
+  Common.Operation operation = 3;
+}
+
+message ConversationSummary {
+  string conversation_id = 1;
+  string title = 2;
+  google.protobuf.Timestamp created_at = 3;
+}
+
+message ConversationHistoryResponse {
+  repeated ConversationSummary conversations = 1;
+  int32 total_items = 2;
+  int32 page = 3; 
+  Common.Operation operation = 4;
+}
+
+message ConversationMessagesRequest {
+  string conversation_id = 1;
+  Common.NassaFilters filters = 2;
+  Common.Operation operation = 3;
+  string user_id = 4;
+}
+
+message ConversationMessage {
+  string content = 1;
+  bool is_from_bot = 2;
+  google.protobuf.Timestamp sent_at = 3;
+  string message_id = 4;
+}
+
+message ConversationMessagesResponse {
+  repeated ConversationMessage messages = 1;
+  int32 total_items = 2;
+  int32 page = 3;
+  Common.Operation operation = 4;
+}

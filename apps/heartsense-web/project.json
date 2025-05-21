@@ -1,0 +1,27 @@
+{
+  "name": "heartsense-web",
+  "projectType": "application",
+  "targets": {
+    "proto-gen-types": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx proto-loader-gen-types --longs=String --enums=String --defaults --oneofs --grpcLib=@grpc/grpc-js --outDir=apps/heartsense-web/protos/generated apps/heartsense-web/protos/ChatService.proto"
+      }
+    },
+    "build": {
+      "executor": "@nx/next:build",
+      "dependsOn": ["proto-gen-types"],
+      "options": {
+        "outputPath": "dist/apps/heartsense-web"
+      }
+    },
+    "serve": {
+      "executor": "@nx/next:server",
+      "options": {
+        "buildTarget": "heartsense-web:build",
+        "dev": true,
+        "port": 3000
+      }
+    }
+  }
+}

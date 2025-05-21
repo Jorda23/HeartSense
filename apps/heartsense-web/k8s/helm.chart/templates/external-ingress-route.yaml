@@ -1,0 +1,105 @@
+###################################################################################
+# MIDDLEWARE
+###################################################################################
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: {{ .Values.lower }}-{{ .Values.ingressRouteId }}-chain
+  namespace: {{ .Values.namespace }}
+spec:
+  chain:
+    middlewares:
+    - name: {{ .Values.lower }}-{{ .Values.ingressRouteId }}-cors
+    - name: {{ .Values.lower }}-{{ .Values.ingressRouteId }}-security-headers
+    - name: {{ .Values.lower }}-{{ .Values.ingressRouteId }}-compress
+---
+###################################################################################
+# CORS MIDDLEWARE
+###################################################################################
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: {{ .Values.lower }}-{{ .Values.ingressRouteId }}-cors
+  namespace: {{ .Values.namespace }}
+spec:
+  headers:
+    accessControlAllowMethods:
+      - "PUT"
+      - "GET"
+      - "POST"
+      - "OPTIONS"
+      - "DELETE"
+      - "HEAD"
+      - "TRACE"
+      - "PATCH"
+    accessControlAllowHeaders:
+      - "*"
+    accessControlAllowOriginList:
+      - "*"
+    customResponseHeaders: 
+      Access-Control-Allow-Headers: {{ .Values.middleware.spec.headers.customResponseHeaders.AccessControlAllowHeaders | quote }}      
+      Access-Control-Allow-Methods: {{ .Values.middleware.spec.headers.customResponseHeaders.AccessControlAllowMethods | quote }}             
+    accessControlMaxAge: {{ .Values.middleware.spec.headers.accessControlMaxAge }}
+    addVaryHeader: {{ .Values.middleware.spec.headers.addVaryHeader }}
+---
+###################################################################################
+# SECURITY HEADERS MIDDLEWARE
+###################################################################################
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: {{ .Values.lower }}-{{ .Values.ingressRouteId }}-security-headers
+  namespace: {{ .Values.namespace }}
+spec:
+  headers:
+    frameDeny: {{ .Values.middleware.spec.headers.frameDeny }}
+    sslRedirect: {{ .Values.middleware.spec.headers.sslRedirect }}
+    stsSeconds: {{ .Values.middleware.spec.headers.stsSeconds }}
+    stsIncludeSubdomains: {{ .Values.middleware.spec.headers.stsIncludeSubdomains }}
+    contentTypeNosniff: {{ .Values.middleware.spec.headers.contentTypeNosniff }}
+    browserXssFilter: {{ .Values.middleware.spec.headers.browserXssFilter }}
+    customResponseHeaders:
+      Server: {{ .Values.middleware.spec.headers.customResponseHeaders.Server | quote }}
+      X-Frame-Options: {{ .Values.middleware.spec.headers.customResponseHeaders.xframeOptions | quote }}
+      X-Content-Type-Options: {{ .Values.middleware.spec.headers.customResponseHeaders.xContentTypeOptions | quote }}
+      Strict-Transport-Security: {{ .Values.middleware.spec.headers.customResponseHeaders.strictTransportSecurity | quote }}
+      x-powered-by: {{ .Values.middleware.spec.headers.customResponseHeaders.xPoweredBy | quote }}
+      Referrer-Policy: {{ .Values.middleware.spec.headers.customResponseHeaders.referrerPolicy | quote }}
+      Permissions-Policy: {{ .Values.middleware.spec.headers.customResponseHeaders.permissionsPolicy | quote }}
+    contentSecurityPolicy: {{ .Values.middleware.spec.headers.contentSecurityPolicy | quote }}
+---
+###################################################################################
+# COMPRESS MIDDLEWARE
+###################################################################################
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: {{ .Values.lower }}-{{ .Values.ingressRouteId }}-compress
+  namespace: {{ .Values.namespace }}
+spec:
+  compress: {}
+---
+###################################################################################
+# INGRESS ROUTE
+###################################################################################
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: {{ .Values.lower }}-{{ .Values.ingressRouteId }}-external-ingress-route
+  namespace: {{ .Values.namespace }}
+  annotations:
+    kubernetes.io/ingress.class: {{ .Values.ingressRoute.spec.ingressClass }}
+spec:
+  entryPoints:
+    - web
+    - websecure
+  routes:
+  - kind: Rule
+    match: {{ .Values.ingressRoute.spec.routes.match }}
+    middlewares:
+    - name: {{ .Values.lower }}-{{ .Values.ingressRouteId }}-chain
+    services:
+    - name: {{ .Values.lower }}-{{ .Values.name }}-svc
+      port: {{ .Values.service.port }}
+  tls:
+   secretName: {{ .Values.ingressRoute.spec.tls.secretName }}

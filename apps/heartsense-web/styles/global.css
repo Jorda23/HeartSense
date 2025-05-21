@@ -1,0 +1,163 @@
+html,
+body {
+  padding: 0;
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
+    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+  line-height: 1.6;
+  font-size: 18px;
+  background-color: #fff !important;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+.form__group {
+  position: relative;
+  padding: 10px 0 0;
+  font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif;
+  margin-top: 1px;
+}
+
+.form__field {
+  font-family: inherit;
+  width: 100%;
+  border: 0;
+  border-bottom: 1px solid #d2d2d2;
+  outline: 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: #0d2e68;
+  padding: 7px 0;
+  background: transparent;
+  transition: border-color 0.2s;
+}
+
+.form__adortment {
+  padding-left: 10px;
+  margin-left: -7px;
+}
+
+.form__control {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.form__adortment_text {
+  color: #a3a2a2;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.form__field::placeholder {
+  color: transparent;
+}
+
+.form__field:placeholder-shown ~ .form__label {
+  font-size: 15px;
+  color: rgba(0, 0, 0, 0.6);
+  line-height: 1.4375em;
+  font-weight: 700;
+  letter-spacing: 0.00938em;
+  cursor: text;
+  top: 17px;
+}
+
+/* shink */
+label,
+.form__field:focus ~ .form__label {
+  position: absolute;
+  top: 0;
+  display: block;
+  font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif;
+  transition: 0.2s;
+  color: #a3a2a2;
+  font-size: 9.5px;
+  font-weight: 500;
+}
+
+.form__field:focus ~ .form__label {
+  color: #a3a2a2;
+}
+
+.form__field:focus,
+.form__field:hover {
+  padding-bottom: 6px;
+  border-bottom: 2px solid #1749a0;
+}
+
+.form__field:disabled {
+  padding-bottom: 6px;
+  color: #a3a2a2;
+  border-bottom: 1px solid #d2d2d2;
+}
+
+.form__label-disabled {
+  color: #a3a2a2 !important;
+}
+
+.form__field--error,
+.form__field--error:focus,
+.form__field--error:hover {
+  color: #ff7182;
+  border-bottom: 2px solid #ff7182;
+}
+
+.form__field--warning,
+.form__field--warning:focus,
+.form__field--warning:hover {
+  border-bottom: 2px solid #e37e07;
+}
+
+.form__field:placeholder-shown ~ .form__label--error {
+  color: #ff7182;
+}
+
+.form__label--error,
+.form__field--error:focus,
+.form__field--error:hover {
+  color: #ff7182 !important;
+}
+
+.form__label--warning {
+  color: #e37e07 !important;
+}
+
+.form-field-hide {
+  visibility: hidden;
+}
+
+.form__error {
+  color: #ff7182;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.03333em;
+  line-height: 1;
+  margin-top: 4px;
+  font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif;
+}
+
+.form__warning {
+  color: #e37e07;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.03333em;
+  line-height: 1;
+  margin-top: 4px;
+  font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif;
+}
+
+.form__readonly,
+.form__readonly:focus,
+.form__readonly:hover {
+  border-bottom: 1px solid #d2d2d2;
+  pointer-events: none;
+  color: #a3a2a2;
+}
